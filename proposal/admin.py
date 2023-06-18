@@ -35,5 +35,6 @@ class ProposalsForm(forms.ModelForm):
 class ProposalModelAdmin(admin.ModelAdmin):
   form = ProposalsForm
   readonly_fields = ["needs_human_approval",]
+  list_filter = ["status"]
 
 admin.site.register(Proposal, ProposalModelAdmin)

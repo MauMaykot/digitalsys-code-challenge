@@ -35,6 +35,7 @@ class ProposalForm(models.Model):
     return self.name + " (" + main_text + ")"
 
 STATUS = [
+  ('', 'Avaliação necessária'),
   ('True', 'Aprovada'),
   ('False', 'Negada'),
 ]
@@ -65,6 +66,6 @@ class Proposal(models.Model):
       return "Negada automaticamente"
 
   def save(self, *args, **kwargs):
-    if self.needs_human_approval == False:
+    if not self.needs_human_approval:
       self.status = "False"
     super(Proposal, self).save(*args, **kwargs)
