@@ -2,7 +2,7 @@
 
 ## Rodando o projeto com Docker
 
-- [Instale o Docker](https://www.docker.com/products/docker-desktop/)
+- Faça o [download](https://www.docker.com/products/docker-desktop/) e instale o Docker
 - Inicie o docker desktop
 - Inicie o container
 ```
