@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+
+  <style>
+    .loader {
+      border: 16px solid #f3f3f3; /* Light grey */
+      border-top: 16px solid #3498db; /* Blue */
+      border-radius: 50%;
+      width: 120px;
+      height: 120px;
+      animation: spin 2s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="d-flex align-items-center justify-content-center vh-100">
+    <div id="after_submit">
+      <center>
+        <div id="loader" class="d-none">
+            <h1>
+              Sua proposta está sendo analisada, favor aguarde <br> ou solicite uma nova proposta.
+              <br>
+              <small class="text-body-secondary">A análise leva em média 20s</small>
+            </h1>
+            <div class="loader mt-5"></div>
+        </div>
+
+        <div id="approved" class="d-none">
+          <h1 style="color: green">Parabéns, sua proposta foi aprovada!</h1>
+        </div>
+
+        <div id="not_approved" class="d-none">
+          <h1 style="color: red">Sinto muito, sua proposta não foi aprovada.</h1>
+        </div>
+
+        <div class="row">
+          <div class="col-12">
+            <button type="button" class="btn btn-primary mt-5 d-none" id="btn_new_proposal">Solicitar nova proposta</button>
+            <br>
+            <br>
+            <h5><small class="text-body-secondary d-none" id="notify">Não se preocupe, você será notificado</small></h5>
+          </div>
+        </div>
+      </center>
+    </div>
+
+    <form action="" method="POST" id="proposal_form">
+      {% csrf_token %}
+      <h3>
+        Proposta ({{proposal.name}}) |
+        <small class="text-body-secondary">favor preencher o formulário abaixo:</small>
+      </h3>
+      <div class="row">
+        {% for field_type in field_types %}
+          {% for field in proposal.fields.all %}
+            {% if field_type == field.type %}
+              <div class="col-{% if field.type == "textarea" %}12{% else %}4{% endif %} mt-4">
+                {{field.name}}:
+                {% if field.type == "text" %}
+                  <input type="{{ field.type }}" name="{{ field.id }}" id="field_{{ field.id }}" class="form-control">
+                {% elif field.type == "email" %}
+                  <input type="{{ field.type }}" name="{{ field.id }}" id="field_{{ field.id }}" class="form-control">
+                {% elif field.type == "select" %}
+                  <select name="{{ field.id }}" id="field_{{ field.id }}" class="form-select">
+                  {% for option in field.choices.all %}
+                    <option value="option_{{option.id}}">{{option.text}}</option>
+                  {% endfor %}
+                  </select>
+                {% elif field.type == "checkbox" %}
+                  <br>
+                  {% for option in field.choices.all %}
+                    <input type="checkbox" id="option_{{option.id}}" name="{{field.id}}_{{option.id}}" value="option_{{option.id}}" class="form-check-input">
+                    <label for="option_{{option.id}}" class="form-check-label">{{option.text}}</label>
+                  {% endfor %}
+                {% elif field.type == "radio"  %}
+                  <br>
+                  {% for option in field.choices.all %}
+                    <input type="radio" id="option_{{option.id}}" name="{{field.id}}" value="option_{{option.id}}" class="form-check-input">
+                    <label for="option_{{option.id}}" class="form-check-label">{{option.text}}</label>
+                  {% endfor %}
+                {% elif field.type == "textarea" %}
+                  <textarea name="{{ field.id }}" id="field_{{ field.id }}" cols="10" rows="2" class="form-control"></textarea>
+                {% endif %}
+              </div>
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn btn-primary float-end mt-3" id="btn_submit">Enviar proposta</button>
+    </form>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+
+      <div id="liveToast-success" class="toast text-bg-success" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-body">
+          Parabéns, sua proposta foi aprovada!
+        </div>
+      </div>
+
+      <div id="liveToast-error" class="toast text-bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-body">
+          Sinto muito, sua proposta não foi aprovada.
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.2/jquery.min.js" integrity="sha512-tWHlutFnuG0C6nQRlpvrEhE4QpkG1nn2MOUMWmUeRePl4e3Aki0VB6W1v3oLjFtd0hVOtRQ9PHpSfN6u6/QXkQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script>
+    const notify           = document.querySelector('#notify')
+    const loader           = document.querySelector('#loader')
+    const counter          = document.querySelector('#counter')
+    const approved         = document.querySelector('#approved')
+    const not_approved     = document.querySelector('#not_approved')
+    const after_submit     = document.querySelector('#after_submit')
+    const proposal_form    = document.querySelector('#proposal_form')
+    const btn_new_proposal = document.querySelector('#btn_new_proposal')
+
+    proposal_form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      after_submit.classList.remove("d-none")
+      approved.classList.add("d-none")
+      not_approved.classList.add("d-none")
+      notify.classList.remove("d-none")
+
+      var form_data = {}
+      form_data["document"] = Object.fromEntries(new FormData(e.target).entries())
+      form_data["name"] = "{{proposal.name}}"
+      form_data["csrfmiddlewaretoken"] = form_data["document"]["csrfmiddlewaretoken"]
+      form_data["document"] = JSON.stringify(form_data["document"])
+
+      proposal_form.classList.add("d-none")
+      loader.classList.remove("d-none")
+      btn_new_proposal.classList.remove("d-none")
+
+      $.post("{{base_url}}/api/send_proposal/", form_data, (data, status) => {
+        var status = data["approved"]
+
+        notify.classList.add("d-none")
+
+        const toastSuccess = document.getElementById('liveToast-success')
+        const toastError = document.getElementById('liveToast-error')
+        const toastBootstrapSuccess = bootstrap.Toast.getOrCreateInstance(toastSuccess)
+        const toastBootstrapError = bootstrap.Toast.getOrCreateInstance(toastError)
+
+        if (status == true) {
+          approved.classList.remove("d-none")
+          toastBootstrapSuccess.show()
+        } else {
+          not_approved.classList.remove("d-none")
+          toastBootstrapError.show()
+        }
+        loader.classList.add("d-none")
+      });
+    });
+
+    btn_new_proposal.addEventListener('click', (e) => {
+      proposal_form.reset();
+      after_submit.classList.add("d-none")
+      not_approved.classList.add("d-none")
+      proposal_form.classList.remove("d-none")
+      notify.classList.add("d-none")
+    });
+  </script>
+
+</body>
+</html>
