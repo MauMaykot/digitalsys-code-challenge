@@ -44,6 +44,10 @@ INSTALLED_APPS = [
 
     # Local apps
     'proposal',
+
+    # 3rd party apps
+    'rest_framework',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
