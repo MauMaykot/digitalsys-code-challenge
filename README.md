@@ -12,7 +12,7 @@ docker-compose up --build
 ```
 
 A aplicação está rodando na porta: `8000`
-- Acesse pelo [link](http://localhost:8000/)
+- Acesse pelo [link](http://localhost:8000/) para preencher e solicitar a proposta
 
 Criação dos campos do formulário da proposta
 - Acesse o [painel de admin](http://localhost:8000/admin/) da aplicação
