@@ -4,7 +4,7 @@
 
 - Faça o [download](https://www.docker.com/products/docker-desktop/) e instale o Docker
 - Inicie o docker desktop
-- Inicie o container
+- Inicie o container:
 ```
 # No CMD digite:
 
