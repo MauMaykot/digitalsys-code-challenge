@@ -1,4 +1,4 @@
-# Code challenge SigitalSys
+# Code challenge DigitalSys
 
 ## Rodando o projeto com Docker
 
