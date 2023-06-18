@@ -11,5 +11,5 @@
 docker-compose up --build
 ```
 
-Está rodando na porta: `localhost:8000`
+A aplicação está rodando na porta: `8000`
 - Acesse pelo [link](http://localhost:8000/)
