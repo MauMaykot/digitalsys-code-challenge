@@ -116,7 +116,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo'
+USE_TZ = True
 
 USE_I18N = True
 
@@ -138,5 +139,5 @@ CELERY_TIMEZONE          = 'America/Sao_Paulo'
 CELERY_ACCEPT_CONTENT    = ['application/json']
 CELERY_TASK_SERIALIZER   = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-CELERY_BROKER_URL        = os.environ.get("CELERY_BROKER_URL", "redis://127.0.0.1:6379")
+CELERY_BROKER_URL        = os.environ.get("CELERY_BROKER_URL", "redis://redis:6379")
 CELERY_RESULT_BACKEND    = os.environ.get("CELERY_RESULT_BACKEND", "django-db")
