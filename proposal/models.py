@@ -29,10 +29,11 @@ class ProposalForm(models.Model):
   main   = models.BooleanField(default=False)
 
   def __str__(self):
-    main_text = "Secondary"
+
     if self.main:
-      main_text = "Main"
-    return self.name + " (" + main_text + ")"
+      return self.name + " (Main)"
+
+    return self.name
 
 STATUS = [
   ('', 'Avaliação necessária'),

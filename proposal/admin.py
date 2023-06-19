@@ -15,9 +15,12 @@ class ProposalFormForm(forms.ModelForm):
 
   def clean_main(self):
     main = self.cleaned_data["main"]
-    if not ProposalForm.objects.all().count() == 0 and not ProposalForm.objects.get(name=self.cleaned_data["name"]).main:
-      if main and ProposalForm.objects.filter(main=True).count() > 0:
-        raise forms.ValidationError("Error: There is already a main proposal")
+
+    if main:
+      forms = ProposalForm.objects.all()
+      for form in forms:
+        form.main = False
+        form.save()
 
     return self.cleaned_data["main"]
 
